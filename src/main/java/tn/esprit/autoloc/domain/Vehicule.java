@@ -7,6 +7,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +19,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "vehicule")
@@ -46,4 +53,22 @@ public class Vehicule {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StatutVehicule statut;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "agence_id_agence", nullable = false)
+    private Agence agence;
+
+    @ManyToMany(fetch = jakarta.persistence.FetchType.LAZY)
+    @JoinTable(
+            name = "vehicule_equipement",
+            joinColumns = @JoinColumn(name = "vehicule_id_vehicule"),
+            inverseJoinColumns = @JoinColumn(name = "equipement_id_equipement")
+    )
+    private Set<Equipement> equipements = new HashSet<>();
+
+    @OneToMany(mappedBy = "vehicule", fetch = jakarta.persistence.FetchType.LAZY)
+    private Set<Reservation> reservations = new HashSet<>();
+
+    @OneToMany(mappedBy = "vehicule", fetch = jakarta.persistence.FetchType.LAZY)
+    private Set<Maintenance> maintenances = new HashSet<>();
 }
